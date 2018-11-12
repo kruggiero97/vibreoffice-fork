@@ -1,6 +1,6 @@
 # vibreoffice
 
-*(Unfortunately, vibreoffice is still in an experimental stage, and I no longer have much time to work on it. Hope you enjoy it anyway!)*
+*Note from fedorov-ao: I have updated this awesome plugin a bit. It is pretty much usable, but still needs much cleanup. Refer to src/vibreoffice.vbs comments for further details.*
 
 vibreoffice is an extension for Libreoffice and OpenOffice that brings some of
 your favorite key bindings from vi/vim to your favorite office suite. It is
@@ -10,10 +10,10 @@ both vi/vim neophytes and experts alike.
 ### Installation/Usage
 
 The easiest way to install is to download the
-[latest extension file](https://raw.github.com/seanyeh/vibreoffice/master/dist/vibreoffice-0.1.4.oxt)
+[latest extension file](https://raw.github.com/fedorov-ao/vibreoffice/master/dist/vibreoffice-0.1.5.oxt)
 and open it with LibreOffice/OpenOffice.
 
-To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice.
+To enable vibreoffice for current window, select `Tools` -> `Add-Ons` -> `vibreoffice - start`; to disable - `vibreoffice - stop`; to toggle - `vibreoffice - toggle` or press `Shift-ESC`.  
 
 If you really want to, you can build the .oxt file yourself by running
 ```shell
@@ -61,10 +61,6 @@ my patience.
   word processing.
 - Using `d`, `c` (or any of their variants) will temporarily bring you into
   Visual mode. This is intentional and should not have any noticeable effects.
-
-vibreoffice is new, so it is bound to have plenty of bugs. Please let me know
-if you run into anything!
-
 
 ### License
 vibreoffice is released under the MIT License.
