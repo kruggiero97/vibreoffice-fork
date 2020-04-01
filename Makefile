@@ -1,6 +1,6 @@
 run_testing: testing
 	killall soffice.bin || echo "No libreoffice instance found"
-	lowriter "$$TESTING_ODT" --norestore &
+	localc "$$TESTING_ODT" --norestore &
 
 testing: src/vibreoffice.vbs
 	./compile.sh "src/vibreoffice.vbs" "$$TESTING_XBA"

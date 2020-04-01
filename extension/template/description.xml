@@ -15,9 +15,9 @@
       <name lang="en">Vibreoffice - Vi-Mode Extension</name>
    </display-name>
    <publisher>
-      <name lang="en" xlink:href="http://www.seanyeh.com">Sean Yeh</name>
+      <name lang="en" xlink:href="">Sean Yeh | JMager | Yamsu</name>
    </publisher>
    <release-notes>
-      <src lang="en" xlink:href="https://github.com/seanyeh/vibreoffice"/>
+      <src lang="en" xlink:href="https://github.com/yamsu/vibreoffice"/>
    </release-notes>
 </description>

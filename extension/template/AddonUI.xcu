@@ -7,7 +7,7 @@
       <node oor:name="AddonMenu">
          <node oor:name="vibreoffice.N001" oor:op="replace">
             <prop oor:name="Context" oor:type="xs:string">
-               <value>com.sun.star.text.TextDocument,com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument</value>
+               <value>com.sun.star.text.TextDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
                <value xml:lang="en">vibreoffice - Toggle Vi Mode</value>
