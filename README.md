@@ -1,6 +1,6 @@
 # vibreoffice
 
-Vim keybinding and more for LibreOffice/OpenOffice **Calc**/Writer/Impress/Drawing
+Vim modal editing/keybindings and more for LibreOffice/OpenOffice **Calc**/Writer/Impress/Drawing
 This is a fork of [seanyeh](https://github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://github.com/JMagers/vibreoffice).  Nice work guys! *However, there was no Calc support.*
 
 The primary focus of this fork is to provide **vim keybindings for calc**.
@@ -17,6 +17,8 @@ Presently, the following vim like features are supported in Calc, while this and
 - Deletion: `x`
 - Undo/redo: `u`, `C-r`
 - Copy/paste: `y`, `p`, `P` (using system clipboard, not vim-like registers)
+Calc Specific
+- Sheet Motion: `J`, `K`
 
 ### Installation/Usage
 
@@ -38,7 +40,7 @@ both vi/vim neophytes and experts alike.
 ### Installation/Usage
 
 The easiest way to install is to download the
-[latest extension file](https://raw.github.com/seanyeh/vibreoffice/master/dist/vibreoffice-0.1.4.oxt)
+[latest extension file]()
 and open it with LibreOffice/OpenOffice.
 
 To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice.
