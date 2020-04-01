@@ -1,5 +1,33 @@
 # vibreoffice
 
+Vim keybinding and more for LibreOffice/OpenOffice Calc/Writer/Impress/Drawing
+This is a fork of [seanyeh](https://github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://github.com/JMagers/vibreoffice).  Nice work guys! **However, there was no Calc support.**
+
+The primary focus of this fork is to provide **vim keybindings for calc**.
+
+As mentioned, the original extension for Libreoffice/OpenOffice didn't support Calc, but provided support for Writer/Impress/Drawing. IMO a spreadsheet is a perfect example where vim's modal editing is a great way to work. There is already an extension for Excel, [ExcelLikeVim](https://github.com/kjnh10/ExcelLikeVim), Google Sheets has a good extension for chrome/firefox [sheetkey](https://github.com/philc/sheetkeys). But there was none that I could find for calc! and hence I added the functionality to vibreoffice.
+
+*But please note this fork is also at an experimental stage.*
+
+Presently, the following vim like features are supported in Calc, while this and more are supported in writer.
+- Insert (`i`, `I`, `A`), Visual (`v`), Normal modes
+- Movement keys: `hjkl`, `w`, `b`, `e`, `$`, `0`, `gg`, `G`,`C-d`, `C-u`
+    - Plus movement and number modifiers: e.g. `5w`, `4j`
+- Number modifiers: e.g. `5w`
+- Deletion: `x`
+- Undo/redo: `u`, `C-r`
+- Copy/paste: `y`, `p`, `P` (using system clipboard, not vim-like registers)
+
+### Installation/Usage
+
+The easiest way to install is to download the
+[latest extension file](https://raw.github.com/yamsu/vibreoffice/master/dist/vibreoffice-0.3.1.oxt)
+and open it with LibreOffice/OpenOffice.
+
+To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice. You may find it more useful to add a keyboard shortcut such as Alt-v to the above menu item.
+
+### Readme from original 
+
 *(Unfortunately, vibreoffice is still in an experimental stage, and I no longer have much time to work on it. Hope you enjoy it anyway!)*
 
 vibreoffice is an extension for Libreoffice and OpenOffice that brings some of
