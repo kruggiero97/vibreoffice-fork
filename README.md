@@ -1,7 +1,7 @@
 # vibreoffice
 
-Vim keybinding and more for LibreOffice/OpenOffice Calc/Writer/Impress/Drawing
-This is a fork of [seanyeh](https://github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://github.com/JMagers/vibreoffice).  Nice work guys! **However, there was no Calc support.**
+Vim keybinding and more for LibreOffice/OpenOffice **Calc**/Writer/Impress/Drawing
+This is a fork of [seanyeh](https://github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://github.com/JMagers/vibreoffice).  Nice work guys! *However, there was no Calc support.*
 
 The primary focus of this fork is to provide **vim keybindings for calc**.
 
