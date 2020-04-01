@@ -17,8 +17,8 @@ Presently, the following vim like features are supported in Calc, while this and
 - Deletion: `x`
 - Undo/redo: `u`, `C-r`
 - Copy/paste: `y`, `p`, `P` (using system clipboard, not vim-like registers)
-Calc Specific
-- Sheet Motion: `J`, `K`
+- Calc Specific
+    - Sheet Motion: `J`, `K`
 
 ### Installation/Usage
 
