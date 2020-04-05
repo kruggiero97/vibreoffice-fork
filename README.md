@@ -1,7 +1,7 @@
 # vibreoffice
 
 Vim modal editing/keybindings and more for LibreOffice/OpenOffice **Calc**/Writer/Impress/Drawing
-This is a fork of [seanyeh](https://github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://github.com/JMagers/vibreoffice).  Nice work guys! *However, there was no Calc support.*
+This is a fork of [seanyeh](https://www.github.com/seanyeh/vibreoffice) original extension with major updates from [JMagers](https://www.github.com/JMagers/vibreoffice) and [fedorov-ao](https://www.github.com/fedorov-ao/vibreoffice).  Nice work guys! *However, there was no Calc support.*
 
 The primary focus of this fork is to provide **vim keybindings for calc**.
 
@@ -23,10 +23,13 @@ Presently, the following vim like features are supported in Calc, while this and
 ### Installation/Usage
 
 The easiest way to install is to download the
-[latest extension file](https://raw.github.com/yamsu/vibreoffice/master/dist/vibreoffice-0.3.1.oxt)
+[latest extension file](https://raw.github.com/yamsu/vibreoffice/master/dist/vibreoffice-0.4.1.oxt)
 and open it with LibreOffice/OpenOffice.
 
 To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice. You may find it more useful to add a keyboard shortcut such as Alt-v to the above menu item.
+
+
+
 
 ### Readme from original 
 
@@ -37,13 +40,11 @@ your favorite key bindings from vi/vim to your favorite office suite. It is
 obviously not meant to be feature-complete, but hopefully will be useful to
 both vi/vim neophytes and experts alike.
 
-### Installation/Usage
+### Installation/Usage Old
 
-The easiest way to install is to download the
-[latest extension file]()
-and open it with LibreOffice/OpenOffice.
+The easiest way to install is to download the [latest extension file]() and open it with LibreOffice/OpenOffice.
 
-To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice.
+To enable vibreoffice for current window, select `Tools` -> `Add-Ons` -> `vibreoffice - start`; to disable - `vibreoffice - stop`; to toggle - `vibreoffice - toggle` or press `Shift-ESC`.  
 
 If you really want to, you can build the .oxt file yourself by running
 ```shell
@@ -91,10 +92,6 @@ my patience.
   word processing.
 - Using `d`, `c` (or any of their variants) will temporarily bring you into
   Visual mode. This is intentional and should not have any noticeable effects.
-
-vibreoffice is new, so it is bound to have plenty of bugs. Please let me know
-if you run into anything!
-
 
 ### License
 vibreoffice is released under the MIT License.
