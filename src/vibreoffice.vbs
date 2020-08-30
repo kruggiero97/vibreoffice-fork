@@ -1565,15 +1565,15 @@ Function ProcessSpecialKey(keyChar)
 
 
 				If APP() <> "CALC" Then
-				     ProcessMovementKey("^", False)
-                     ProcessMovementKey("j", True)
+					 'ProcessMovementKey("^", False)
+                     'ProcessMovementKey("j", True)
             	' A bit hacky, but works
 					oCursor = getCursor()
 					oCursor.gotoStartOfLine(False)
 					oCursor.gotoEndOfLine(True)                
 
 					oTextCursor = getTextCursor()
-					oTextCursor.goRight(1, True)
+					'oTextCursor.goRight(1, True)
 					getCurrentController().Select(oTextCursor)
 					yankSelection(bIsDelete)
 				Else
@@ -1615,7 +1615,9 @@ Function ProcessSpecialKey(keyChar)
 					If APP() <> "CALC" Then
 						setSpecial("c")
 						gotoMode(M_VISUAL)
-						ProcessNormalKey("l", 0)
+						ProcessMovementKey("l", True)
+						yankSelection(True)
+						gotoMode(M_INSERT)	
 					Else
 						setSpecial("c")
 						gotoMode(M_VISUAL)		
