@@ -1378,11 +1378,11 @@ End Function
 
 Function ProcessNormalKey(keyChar, modifiers, optional oEvent)
     dim i, bMatched, bMatchedMovement, bIsVisual, iIterations, bIsControl, sSpecial
+	dim oTextCursor
     bIsControl = (modifiers = 2) or (modifiers = 8)
     bIsVisual = (MODE = M_VISUAL Or MODE = M_VISUAL_LINE) ' is this hardcoding bad? what about visual block?
 
 	If bIsVisual and keyChar = "o" Then
-		dim oTextCursor
 		oTextCursor = getTextCursor()
 		swapCursorEnds(oTextCursor)
 		getCurrentController().select(oTextCursor)
