@@ -23,7 +23,7 @@ Presently, the following vim like features are supported in Calc, while this and
 ### Installation/Usage
 
 The easiest way to install is to download the
-[latest extension file](https://raw.github.com/yamsu/vibreoffice/master/dist/vibreoffice-0.4.1.oxt)
+[latest extension file](https://raw.github.com/yamsu/vibreoffice/master/dist/vibreoffice-0.4.2.oxt)
 and open it with LibreOffice/OpenOffice.
 
 To enable/disable vibreoffice, simply select Tools -> Add-Ons -> vibreoffice. You may find it more useful to add a keyboard shortcut such as Alt-v to the above menu item.
