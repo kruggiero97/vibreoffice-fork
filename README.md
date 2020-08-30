@@ -14,11 +14,12 @@ Presently, the following vim like features are supported in Calc, while this and
 - Movement keys: `hjkl`, `w`, `b`, `e`, `$`, `0`, `gg`, `G`,`C-d`, `C-u`
     - Plus movement and number modifiers: e.g. `5w`, `4j`
 - Number modifiers: e.g. `5w`
-- Deletion: `x`
+- Deletion: `x`, `d`, `c`, `s`, `D`, `C`, `dd`, `cc`
 - Undo/redo: `u`, `C-r`
 - Copy/paste: `y`, `p`, `P` (using system clipboard, not vim-like registers)
 - Calc Specific
     - Sheet Motion: `J`, `K`
+    - Insert Row: `o`, `O`
 
 ### Installation/Usage
 
