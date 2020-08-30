@@ -1,4 +1,3 @@
-
 ' vibreoffice - Vi Mode for LibreOffice/OpenOffice
 '
 ' The MIT License (MIT)
@@ -270,6 +269,55 @@ private function printString(oCursor, s)
 	oCursor.goRight(l, False)
 end function
 
+' -----------------
+' Calc Related Function
+' -----------------
+
+Function getSheet()
+	getSheet = ThisComponent.CurrentSelection.getSpreadsheet
+End Function
+
+Function insertRow(Optional opt As Integer)
+	REM 1 Below 0 for Above
+	Dim sheet as Object
+	Dim myRangeRaw as Object
+	Dim Rs, Re
+	Dim optL as Integer
+	if IsMissing(opt) Then
+		optL = 1 
+	Else
+		optL = opt
+	End If
+
+	sheet = getSheet()
+	myRangeRaw = ThisComponent.getCurrentSelection.getRangeAddress
+	Rs = myRangeRaw.startRow
+    Re = myRangeRaw.endRow
+    If optL = 1 Then
+    	REM Below need to move down one cell
+		sheet.Rows.insertByIndex(Rs+1, 1)
+	Else
+		REM Above
+		sheet.Rows.insertByIndex(Re, 1)
+	End If
+End Function
+
+
+Function removeRow()
+	REM 1 Below 0 for Above
+	Dim sheet as Object
+	Dim myRangeRaw as Object
+	Dim Rs, Re
+
+
+	sheet = getSheet()
+	myRangeRaw = ThisComponent.getCurrentSelection.getRangeAddress
+	Rs = myRangeRaw.startRow
+    Re = myRangeRaw.endRow
+
+	sheet.Rows.removeByIndex(Re, 1)
+
+End Function
 ' -----------------
 ' Helper Functions
 ' -----------------
@@ -1187,10 +1235,11 @@ Function ProcessGlobalKey(oEvent)
 			simulate_KeyPress_Char("ESCAPE")
 			simulate_KeyPress_Char("DOWN")
 			simulate_KeyPress_Char("UP")
-			Else
+			ElseIf (MODE = M_INSERT) Then
 			' Prevents cell entries from being undone'
-			simulate_KeyPress_Char("RETURN")
+			simulate_KeyPress_Char("DOWN")
 			simulate_KeyPress_Char("UP")
+			
 			End If
         	bMatched = True
         End If
@@ -1224,9 +1273,12 @@ Function ProcessStandardMovementKey(oEvent)
         ProcessMovementKey("l", True)
     ElseIf c = 1028 Then
         ProcessMovementKey("^", True)
-    ElseIf c = "0" Then
-        ProcessMovementKey("0", True) ' key for zero (0)
-    ElseIf c = 1029 Then
+    ElseIf c = "0"   and getRawMultiplier() = 0 Then
+    'and getRawMultiplier() = 0
+    	' Only if this entry is not part of the multiplier
+			ProcessMovementKey("0", True) ' key for zero (0)
+
+     ElseIf c = 1029 Then
         ProcessMovementKey("$", True)
     Else
         bMatched = False
@@ -1284,26 +1336,31 @@ Function ProcessModeKey(oEvent)
 			End If
 
             If KeyChar = "o" Then
-                ProcessMovementKey("$")
-                ProcessMovementKey("l")
 				If APP() <> "CALC" Then
+				    ProcessMovementKey("$")
+                	ProcessMovementKey("l")
 					getCursor().setString(chr(13))
 					If Not getCursor().isAtStartOfLine() Then
 						getCursor().setString(chr(13) & chr(13))
 						ProcessMovementKey("l")
 					End If
+				Else
+					insertRow(1)
+					ProcessMovementKey("j")
 				End If
             End If
 
             If KeyChar = "O" Then
-                ProcessMovementKey("0")
 				If APP() <> "CALC" Then
+				    ProcessMovementKey("^")
 					getCursor().setString(chr(13))
 					If Not getCursor().isAtStartOfLine() Then
 						ProcessMovementKey("h")
 						getCursor().setString(chr(13))
 						ProcessMovementKey("l")
 					End If
+				Else
+					insertRow(0)
 				End If
             End If
 
@@ -1505,10 +1562,11 @@ Function ProcessSpecialKey(keyChar)
             bIsSpecialCase = (keyChar = "d" And getSpecial() = "d") Or (keyChar = "c" And getSpecial() = "c")
 
             If bIsSpecialCase Then
-                ProcessMovementKey("0", False)
-                ProcessMovementKey("j", True)
+
 
 				If APP() <> "CALC" Then
+				     ProcessMovementKey("^", False)
+                     ProcessMovementKey("j", True)
             	' A bit hacky, but works
 					oCursor = getCursor()
 					oCursor.gotoStartOfLine(False)
@@ -1517,8 +1575,14 @@ Function ProcessSpecialKey(keyChar)
 					oTextCursor = getTextCursor()
 					oTextCursor.goRight(1, True)
 					getCurrentController().Select(oTextCursor)
+					yankSelection(bIsDelete)
+				Else
+					yankSelection(bIsDelete)
+					removeRow()
 				End If
-                yankSelection(bIsDelete)
+                
+            Elseif (keyChar = "y" And getSpecial() = "y") Then
+            	yankSelection(False)
             Else
                 bMatched = False
             End If
@@ -1546,18 +1610,24 @@ Function ProcessSpecialKey(keyChar)
 
         ' Enter Special mode: 'd', 'c', or 'y' ('s' => 'cl')
         ElseIf MODE = M_NORMAL Then
-
-			If APP() <> "CALC" Then
 				' 's' => 'cl'
 				If keyChar = "s" Then
-					setSpecial("c")
-					gotoMode(M_VISUAL)
-					ProcessNormalKey("l", 0)
+					If APP() <> "CALC" Then
+						setSpecial("c")
+						gotoMode(M_VISUAL)
+						ProcessNormalKey("l", 0)
+					Else
+						setSpecial("c")
+						gotoMode(M_VISUAL)		
+						yankSelection(True)
+						simulate_KeyPress_Char("DELETE")	
+						gotoMode(M_INSERT)	
+					End If
 				Else
 					setSpecial(keyChar)
 					gotoMode(M_VISUAL)
 				End If
-			End If
+
         End If
 
     ' If is 'r' for replace
@@ -1633,7 +1703,7 @@ Function ProcessSpecialKey(keyChar)
 
     ElseIf keyChar = "D" Or keyChar = "C" Then
         If MODE = M_VISUAL Or MODE = M_VISUAL_LINE Then
-            ProcessMovementKey("0", False)
+            ProcessMovementKey("^", False)
             ProcessMovementKey("$", True)
             ProcessMovementKey("l", True)
         Else
@@ -1657,7 +1727,7 @@ Function ProcessSpecialKey(keyChar)
     ' S only valid in NORMAL mode
     ElseIf keyChar = "S" And MODE = M_NORMAL Then
 		If APP() <> "CALC" Then
-			ProcessMovementKey("0", False)
+			ProcessMovementKey("^", False)
 			ProcessMovementKey("$", True)
 			yankSelection(True)
 			gotoMode(M_INSERT)
@@ -1826,7 +1896,9 @@ End Function
 '   axf Need to pass oEvent to make in available to called functions (i.e. search)
 Function ProcessMovementKey(keyChar, Optional bExpand, Optional keyModifiers, Optional oEvent)
     dim oTextCursor, bSetCursor, bMatched
-    oTextCursor = getTextCursor()
+    'If APP() <> "CALC" Then
+    	oTextCursor = getTextCursor()
+    'End If
     bMatched = True
     If IsMissing(bExpand) Then bExpand = False
     If IsMissing(keyModifiers) Then keyModifiers = 0
@@ -2048,14 +2120,15 @@ Function ProcessMovementKey(keyChar, Optional bExpand, Optional keyModifiers, Op
         If APP() = "CALC" Then
 			simulate_KeyPress_Char("PAGEDOWN", "CTRL")
         End If
-    ElseIf keyChar = "0" Then
-        If APP() <> "CALC" Then
-			getCursor().gotoStartOfLine(bExpand)
-			bSetCursor = False
-		Else
-			If bExpand Then simulate_KeyPress_Char("HOME", "SHIFT") Else simulate_KeyPress_Char("HOME")
+    ElseIf keyChar = "0"  and getRawMultiplier() = 0 Then
+        if keyModifiers = 0 Then
+        	If APP() <> "CALC" Then
+				getCursor().gotoStartOfLine(bExpand)
+				bSetCursor = False
+			Else
+				If bExpand Then simulate_KeyPress_Char("HOME", "SHIFT") Else simulate_KeyPress_Char("HOME")
+        	End If
         End If
-
     ElseIf keyChar = "^" Then
         If APP() <> "CALC" Then
         ' This variable represents the original line the cursor was on before 
@@ -2097,6 +2170,8 @@ Function ProcessMovementKey(keyChar, Optional bExpand, Optional keyModifiers, Op
         ' Move the cursor to the first non space/tab character.
         getCursor().goRight(i - 1, bExpand)
         bSetCursor = False
+        Else
+			If bExpand Then simulate_KeyPress_Char("HOME", "SHIFT") Else simulate_KeyPress_Char("HOME")
 		End If
 
     ElseIf keyChar = "$" Then
