@@ -82,6 +82,12 @@
 ' TODO Add separate status bar for vibreoffice. Not as easy as it seems.
 ' TODO Split ProcessMovementKey() into several specialized functions (hjkl movement, word-based movement...).
 ' Pass number of iterations to these functions to handle repetitions internally.
+'
+' kruggiero97 revision history (https://github.com/kruggiero97/vibreoffice-fork)
+'''''''''''''''''''''''''Revision 08Nov2025''''''''''''''''''''''''''
+' Modified KEYS function, left old function commented out just in case
+' Modified ProcessModeKey function so that movement keys (hjkl) work. Modified i, I, a, A cases so that it always just sends F2 to the cell
+''''''''''''''''''''''''''Revision 08Nov2025''''''''''''''''''''''''''
 ' 
 
 ' Following option allows the use of ActiveCell, but doesn't work'
@@ -138,55 +144,187 @@ Public Function MODS (key as String)
 	End Select
 End Function
 
-Public Function KEYS( key as String, Optional modifier as Integer )
-Select Case key
-	Case "ESCAPE":
-		KEYS = Array(9,	  com.sun.star.awt.Key.ESCAPE,   0)
-	Case "RETURN":
-		KEYS = Array(13,  com.sun.star.awt.Key.RETURN,   0)
-	Case "F":
-		KEYS = Array(41,	  com.sun.star.awt.Key.F,   0)
-	Case "F2":
-		KEYS = Array(68,  com.sun.star.awt.Key.F2,       0)
-	Case "DELETE":
-		KEYS = Array(91,  com.sun.star.awt.Key.DELETE,   0)
-	Case "HOME":
-		KEYS = Array(110, com.sun.star.awt.Key.HOME,     0)
-	Case "UP":
-		KEYS = Array(111, com.sun.star.awt.Key.UP,       0)
-	Case "PAGEUP":
-		KEYS = Array(112, com.sun.star.awt.Key.PAGEUP,   0)
-	Case "LEFT":
-		KEYS = Array(113, com.sun.star.awt.Key.LEFT,     0)
-	Case "RIGHT":
-		KEYS = Array(114, com.sun.star.awt.Key.RIGHT,    0)
-	Case "END":
-		KEYS = Array(115, com.sun.star.awt.Key.END,      0)
-	Case "DOWN":
-		KEYS = Array(116, com.sun.star.awt.Key.DOWN,     0)
-	Case "PAGEDOWN":
-		KEYS = Array(117, com.sun.star.awt.Key.PAGEDOWN, 0)
-End Select
-If Not IsMissing(modifier) Then KEYS(2)=modifier
+
+' Public Function KEYS( key as String, Optional modifier as Integer )
+' MsgBox "KEYS called with: [" & key & "]"
+' Select Case key
+' 	Case "ESCAPE":
+' 		KEYS = Array(9,	  com.sun.star.awt.Key.ESCAPE,   0)
+' 	Case "RETURN":
+' 		KEYS = Array(13,  com.sun.star.awt.Key.RETURN,   0)
+' 	Case "F":
+' 		KEYS = Array(41,	  com.sun.star.awt.Key.F,   0)
+' 	Case "F2":
+' 		KEYS = Array(68,  com.sun.star.awt.Key.F2,       0)
+' 	Case "DELETE":
+' 		KEYS = Array(91,  com.sun.star.awt.Key.DELETE,   0)
+' 	Case "HOME":
+' 		KEYS = Array(110, com.sun.star.awt.Key.HOME,     0)
+' 	Case "UP":
+' 		KEYS = Array(111, com.sun.star.awt.Key.UP,       0)
+' 	Case "PAGEUP":
+' 		KEYS = Array(112, com.sun.star.awt.Key.PAGEUP,   0)
+' 	Case "LEFT":
+' 		KEYS = Array(113, com.sun.star.awt.Key.LEFT,     0)
+' 	Case "RIGHT":
+' 		KEYS = Array(114, com.sun.star.awt.Key.RIGHT,    0)
+' 	Case "END":
+' 		KEYS = Array(115, com.sun.star.awt.Key.END,      0)
+' 	Case "DOWN":
+' 		KEYS = Array(116, com.sun.star.awt.Key.DOWN,     0)
+' 	Case "PAGEDOWN":
+' 		KEYS = Array(117, com.sun.star.awt.Key.PAGEDOWN, 0)
+' End Select
+' If Not IsMissing(modifier) Then KEYS(2)=modifier
+' End Function
+
+Public Function KEYS(key As String, Optional modifier As Integer) As Variant
+    Dim a(2) As Integer
+    
+	'MsgBox used for debugging...
+	'MsgBox "KEYS called with: [" & key & "]"
+
+    a(0) = 0
+    a(1) = 0
+    a(2) = 0
+
+    Select Case UCase$(key)
+        Case "ESCAPE"
+            a(0) = 9
+            a(1) = com.sun.star.awt.Key.ESCAPE
+        Case "RETURN"
+            a(0) = 13
+            a(1) = com.sun.star.awt.Key.RETURN
+        Case "F"
+            a(0) = 41
+            a(1) = com.sun.star.awt.Key.F
+        Case "F2"
+            a(0) = 68
+            a(1) = com.sun.star.awt.Key.F2
+        Case "DELETE"
+            a(0) = 91
+            a(1) = com.sun.star.awt.Key.DELETE
+        Case "HOME"
+            a(0) = 110
+            a(1) = com.sun.star.awt.Key.HOME
+        Case "UP"
+            a(0) = 111
+            a(1) = com.sun.star.awt.Key.UP
+        Case "PAGEUP"
+            a(0) = 112
+            a(1) = com.sun.star.awt.Key.PAGEUP
+        Case "LEFT"
+            a(0) = 113
+            a(1) = com.sun.star.awt.Key.LEFT
+        Case "RIGHT"
+            a(0) = 114
+            a(1) = com.sun.star.awt.Key.RIGHT
+        Case "END"
+            a(0) = 115
+            a(1) = com.sun.star.awt.Key.END
+        Case "DOWN"
+            a(0) = 116
+            a(1) = com.sun.star.awt.Key.DOWN
+        Case "PAGEDOWN"
+            a(0) = 117
+            a(1) = com.sun.star.awt.Key.PAGEDOWN
+        ' Case Else: keep zeros; unknown key
+    End Select
+
+    If Not IsMissing(modifier) Then a(2) = modifier
+
+    KEYS = a
 End Function
 
-Sub simulate_KeyPress_Char( key as String, Optional modifier as String, Optional modifier2 as String, Optional modifier3 as String)
-REM Simulate a RETURN Key press ( and -release ) in the current Window.
-REM NB. This can cause the triggering of window elements.
-    Dim oKeyEvent As New com.sun.star.awt.KeyEvent
-	Dim KeyData(3) As Integer
-	Dim finalModfiers As Integer
-	finalModfiers = 0
-	If Not IsMissing(modifier) Then finalModfiers = finalModfiers + MODS(modifier)
-	If Not IsMissing(modifier2) Then finalModfiers = finalModfiers + MODS(modifier2)
-	If Not IsMissing(modifier3) Then finalModfiers = finalModfiers + MODS(modifier3)
-	KeyData = KEYS(key, finalModfiers)
+Sub simulate_KeyPress_Char( key As String, _
+                            Optional modifier As String, _
+                            Optional modifier2 As String, _
+                            Optional modifier3 As String)
 
-    oKeyEvent.Modifiers = KeyData(2)     REM A combination of com.sun.star.awt.KeyModifier.
-    oKeyEvent.KeyCode   = KeyData(1)               REM 1280.
-    oKeyEvent.KeyChar   = chr( KeyData(0) )
-    simulate_KeyPress( oKeyEvent )
+    ' For Calc, use UNO for navigation keys, but use a REAL key event for F2
+    ' so we reliably enter in-cell edit mode instead of overwriting the cell.
+    If APP() = "CALC" And UCase$(key) <> "F2" Then
+        Dim dispatcher As Object
+        Dim cmd As String
+
+        dispatcher = createUnoService("com.sun.star.frame.DispatchHelper")
+
+        Select Case UCase$(key)
+            Case "DOWN"
+                cmd = ".uno:GoDown"
+            Case "UP"
+                cmd = ".uno:GoUp"
+            Case "LEFT"
+                cmd = ".uno:GoLeft"
+            Case "RIGHT"
+                cmd = ".uno:GoRight"
+            Case "PAGEDOWN"
+                cmd = ".uno:GoDownBlock"
+            Case "PAGEUP"
+                cmd = ".uno:GoUpBlock"
+            Case "HOME"
+                cmd = ".uno:GoToStartOfRow"
+            Case "END"
+                cmd = ".uno:GoToEndOfRow"
+            Case "DELETE"
+                cmd = ".uno:Delete"
+            Case "ESCAPE"
+                cmd = ".uno:Cancel"
+            Case "F"
+                ' Used as Ctrl+F in other parts of the code
+                cmd = ".uno:FindAndReplace"
+            Case Else
+                cmd = ""
+        End Select
+
+        If cmd <> "" Then
+            dispatcher.executeDispatch( _
+                getCurrentController().Frame, cmd, "", 0, Array() )
+        End If
+
+        Exit Sub
+    End If
+
+    ' F2 in CALC, and ALL keys in WRITER/other apps:
+    ' fall through to synthetic KeyEvent path so we get true "key presses".
+    Dim oKeyEvent As New com.sun.star.awt.KeyEvent
+    Dim KeyData As Variant
+    Dim finalModifiers As Integer
+
+    finalModifiers = 0
+    If Not IsMissing(modifier)  Then finalModifiers = finalModifiers + MODS(modifier)
+    If Not IsMissing(modifier2) Then finalModifiers = finalModifiers + MODS(modifier2)
+    If Not IsMissing(modifier3) Then finalModifiers = finalModifiers + MODS(modifier3)
+
+    KeyData = KEYS(key, finalModifiers)
+
+    oKeyEvent.Modifiers = KeyData(2)
+    oKeyEvent.KeyCode   = KeyData(1)
+    oKeyEvent.KeyChar   = Chr(KeyData(0))
+
+    simulate_KeyPress(oKeyEvent)
 End Sub
+
+
+
+' Sub simulate_KeyPress_Char( key as String, Optional modifier as String, Optional modifier2 as String, Optional modifier3 as String)
+' REM Simulate a RETURN Key press ( and -release ) in the current Window.
+' REM NB. This can cause the triggering of window elements.
+'     Dim oKeyEvent As New com.sun.star.awt.KeyEvent
+' 	' Dim KeyData(3) As Integer
+' 	Dim KeyData As Variant
+' 	Dim finalModfiers As Integer
+' 	finalModfiers = 0
+' 	If Not IsMissing(modifier) Then finalModfiers = finalModfiers + MODS(modifier)
+' 	If Not IsMissing(modifier2) Then finalModfiers = finalModfiers + MODS(modifier2)
+' 	If Not IsMissing(modifier3) Then finalModfiers = finalModfiers + MODS(modifier3)
+' 	KeyData = KEYS(key, finalModfiers)
+
+'     oKeyEvent.Modifiers = KeyData(2)     REM A combination of com.sun.star.awt.KeyModifier.
+'     oKeyEvent.KeyCode   = KeyData(1)               REM 1280.
+'     oKeyEvent.KeyChar   = chr( KeyData(0) )
+'     simulate_KeyPress( oKeyEvent )
+' End Sub
 
 Sub simulate_KeyPress( oKeyEvent As com.sun.star.awt.KeyEvent )
 REM Simulate a Key press ( and -release ) in the current Window.
@@ -1304,74 +1442,169 @@ Function ProcessNumberKey(oEvent)
 End Function
 
 
+' Function ProcessModeKey(oEvent)
+' 	dim keyChar
+'     dim bIsModified
+'     bIsModified = oEvent.Modifiers > 1 ' If Ctrl or Alt is held down. (Shift=1)
+'     ' Don't change modes in these circumstances
+'     If MODE <> M_NORMAL Or bIsModified Or getSpecial <> "" Or getMovementModifier() <> "" Then
+'         ProcessModeKey = False
+'         Exit Function
+'     End If
+
+'     ' Mode matching
+'     dim bMatched, oTextCursor
+'     bMatched = True
+'     keyChar = getLatinKey(oEvent)
+' 	oTextCursor = getTextCursor()
+'     Select Case oEvent.KeyChar
+'         ' Insert modes
+'         Case "i", "a", "I", "A", "o", "O":
+' 			If APP() <> "CALC" Then
+' 				If oEvent.KeyChar = "a" And NOT oTextCursor.isEndOfParagraph() Then getCursor().goRight(1, False)
+' 				If oEvent.KeyChar = "I" Then ProcessMovementKey("^")
+' 				If oEvent.KeyChar = "A" Then ProcessMovementKey("$")
+' 			Else
+' 				If oEvent.KeyChar = "I" Then 
+' 					simulate_KeyPress_Char("F2")
+' 					simulate_KeyPress_Char("HOME")
+' 				End If
+' 				If oEvent.KeyChar = "a" Then simulate_KeyPress_Char("F2")
+' 				If oEvent.KeyChar = "A" Then simulate_KeyPress_Char("F2") 
+' 			End If
+
+'             If KeyChar = "o" Then
+' 				If APP() <> "CALC" Then
+' 				    ProcessMovementKey("$")
+'                 	ProcessMovementKey("l")
+' 					getCursor().setString(chr(13))
+' 					If Not getCursor().isAtStartOfLine() Then
+' 						getCursor().setString(chr(13) & chr(13))
+' 						ProcessMovementKey("l")
+' 					End If
+' 				Else
+' 					insertRow(1)
+' 					ProcessMovementKey("j")
+' 				End If
+'             End If
+
+'             If KeyChar = "O" Then
+' 				If APP() <> "CALC" Then
+' 				    ProcessMovementKey("^")
+' 					getCursor().setString(chr(13))
+' 					If Not getCursor().isAtStartOfLine() Then
+' 						ProcessMovementKey("h")
+' 						getCursor().setString(chr(13))
+' 						ProcessMovementKey("l")
+' 					End If
+' 				Else
+' 					insertRow(0)
+' 				End If
+'             End If
+
+'             gotoMode(M_INSERT)
+'         Case "v":
+'             gotoMode(M_VISUAL)
+'         Case "V":
+'             gotoMode(M_VISUAL_LINE)
+'         Case Else:
+'             bMatched = False
+'     End Select
+'     ProcessModeKey = bMatched
+' End Function
+
+
 Function ProcessModeKey(oEvent)
-	dim keyChar
-    dim bIsModified
-    bIsModified = oEvent.Modifiers > 1 ' If Ctrl or Alt is held down. (Shift=1)
-    ' Don't change modes in these circumstances
+    Dim keyChar As String
+    Dim bIsModified As Boolean
+    Dim bMatched As Boolean
+    Dim oTextCursor As Object
+
+    bIsModified = (oEvent.Modifiers > 1)   ' Ctrl or Alt held (Shift = 1)
+
+    ' Only change modes from NORMAL, and only if there is no active special/movement modifier
     If MODE <> M_NORMAL Or bIsModified Or getSpecial <> "" Or getMovementModifier() <> "" Then
         ProcessModeKey = False
         Exit Function
     End If
 
-    ' Mode matching
-    dim bMatched, oTextCursor
+    keyChar = getLatinKey(oEvent)          ' Layout-independent key (important!)
     bMatched = True
-    keyChar = getLatinKey(oEvent)
-	oTextCursor = getTextCursor()
-    Select Case oEvent.KeyChar
+    oTextCursor = getTextCursor()
+
+    Select Case keyChar
+        ' --------
         ' Insert modes
-        Case "i", "a", "I", "A", "o", "O":
-			If APP() <> "CALC" Then
-				If oEvent.KeyChar = "a" And NOT oTextCursor.isEndOfParagraph() Then getCursor().goRight(1, False)
-				If oEvent.KeyChar = "I" Then ProcessMovementKey("^")
-				If oEvent.KeyChar = "A" Then ProcessMovementKey("$")
-			Else
-				If oEvent.KeyChar = "I" Then 
-					simulate_KeyPress_Char("F2")
-					simulate_KeyPress_Char("HOME")
-				End If
-				If oEvent.KeyChar = "a" Then simulate_KeyPress_Char("F2")
-				If oEvent.KeyChar = "A" Then simulate_KeyPress_Char("F2") 
-			End If
-
-            If KeyChar = "o" Then
-				If APP() <> "CALC" Then
-				    ProcessMovementKey("$")
-                	ProcessMovementKey("l")
-					getCursor().setString(chr(13))
-					If Not getCursor().isAtStartOfLine() Then
-						getCursor().setString(chr(13) & chr(13))
-						ProcessMovementKey("l")
-					End If
-				Else
-					insertRow(1)
-					ProcessMovementKey("j")
-				End If
+        ' --------
+        Case "i", "a", "I", "A", "o", "O"
+            If APP() <> "CALC" Then
+                ' -------- Writer / text docs --------
+                If keyChar = "a" And Not oTextCursor.isEndOfParagraph() Then
+                    getCursor().goRight(1, False)
+                End If
+                If keyChar = "I" Then
+                    ProcessMovementKey("^")   ' go to first non-blank char
+                End If
+                If keyChar = "A" Then
+                    ProcessMovementKey("$")   ' go to end of line
+                End If
+            Else
+                ' For now: all of i / I / a / A just enter edit mode on the cell.
+                Select Case keyChar
+                    Case "i", "I", "a", "A"
+                        simulate_KeyPress_Char("F2")
+                End Select
             End If
 
-            If KeyChar = "O" Then
-				If APP() <> "CALC" Then
-				    ProcessMovementKey("^")
-					getCursor().setString(chr(13))
-					If Not getCursor().isAtStartOfLine() Then
-						ProcessMovementKey("h")
-						getCursor().setString(chr(13))
-						ProcessMovementKey("l")
-					End If
-				Else
-					insertRow(0)
-				End If
+            ' Open new line / row BELOW (o)
+            If keyChar = "o" Then
+                If APP() <> "CALC" Then
+                    ProcessMovementKey("$")
+                    ProcessMovementKey("l")
+                    getCursor().setString(chr(13))
+                    If Not getCursor().isAtStartOfLine() Then
+                        getCursor().setString(chr(13) & chr(13))
+                        ProcessMovementKey("l")
+                    End If
+                Else
+                    ' Insert row below, move into it, start editing
+                    insertRow(1)
+                    ProcessMovementKey("j")
+                    simulate_KeyPress_Char("F2")
+                End If
             End If
 
+            ' Open new line / row ABOVE (O)
+            If keyChar = "O" Then
+                If APP() <> "CALC" Then
+                    ProcessMovementKey("^")
+                    getCursor().setString(chr(13))
+                    If Not getCursor().isAtStartOfLine() Then
+                        ProcessMovementKey("h")
+                        getCursor().setString(chr(13))
+                        ProcessMovementKey("l")
+                    End If
+                Else
+                    ' Insert row above, edit it
+                    insertRow(0)
+                    simulate_KeyPress_Char("F2")
+                End If
+            End If
+
+            ' We are now in INSERT mode (both Writer and Calc)
             gotoMode(M_INSERT)
-        Case "v":
+
+        ' -------- Visual modes --------
+        Case "v"
             gotoMode(M_VISUAL)
-        Case "V":
+
+        Case "V"
             gotoMode(M_VISUAL_LINE)
-        Case Else:
+
+        Case Else
             bMatched = False
     End Select
+
     ProcessModeKey = bMatched
 End Function
 
